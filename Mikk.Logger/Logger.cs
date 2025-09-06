@@ -142,6 +142,16 @@ public class Logger
     }
 
     /// <summary>
+    /// Outputs a line terminator
+    /// </summary>
+    [System.Runtime.CompilerServices.Discardable]
+    public Logger NewLine()
+    {
+        Console.WriteLine();
+        return this;
+    }
+
+    /// <summary>
     ///  Make a noise if the current level is active
     /// </summary>
     [System.Runtime.CompilerServices.Discardable]
