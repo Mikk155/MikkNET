@@ -130,9 +130,9 @@ public class Logger
     /// <param name="text">Text to write</param>
     /// <param name="color">Fore color of the text</param>
     [System.Runtime.CompilerServices.Discardable]
-    public Logger Write( string text, System.ConsoleColor color = System.ConsoleColor.White )
+    public Logger Write( string? text, System.ConsoleColor color = System.ConsoleColor.White )
     {
-        if( this.IsLevelActive )
+        if( !string.IsNullOrEmpty( text ) && this.IsLevelActive )
         {
             Console.ForegroundColor = color;
             Console.Write( text );
