@@ -42,6 +42,8 @@ public enum LoggerLevel
 
 public class Logger
 {
+    private const ConsoleColor SquareBracketColor = ConsoleColor.DarkYellow;
+
     /// <summary>
     /// Global level for all Loggers
     /// </summary>
@@ -205,17 +207,22 @@ public class Logger
 
         if( this.IsLevelActive )
         {
+            Console.ForegroundColor = SquareBracketColor;
             Console.Write( '[' );
+
             Console.ForegroundColor = this.Color;
             Console.Write( this.Name );
-            Console.ResetColor();
-            Console.Write( "] " );
 
-            Console.Write( '[' );
+            Console.ForegroundColor = SquareBracketColor;
+            Console.Write( "] [" );
+
             Console.ForegroundColor = color;
             Console.Write( type );
-            Console.ResetColor();
+
+            Console.ForegroundColor = SquareBracketColor;
             Console.Write( "] " );
+
+            Console.ResetColor();
         }
 
         return this;
