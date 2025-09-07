@@ -108,6 +108,19 @@ public class Logger
             this.LogLevels &= ~level;
     }
 
+    static Logger()
+    {
+        Console.CancelKeyPress += (p, e) =>
+        {
+            Console.ResetColor();
+        };
+
+        AppDomain.CurrentDomain.ProcessExit += (p, e) =>
+        {
+            Console.ResetColor();
+        };
+    }
+
     ~Logger()
     {
         Console.ResetColor();
