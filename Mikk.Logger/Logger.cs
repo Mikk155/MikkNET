@@ -42,7 +42,7 @@ public enum LoggerLevel
 
 public class Logger
 {
-    private const ConsoleColor SquareBracketColor = ConsoleColor.DarkYellow;
+    public const ConsoleColor SquareBracketColor = ConsoleColor.DarkYellow;
 
     /// <summary>
     /// Global level for all Loggers
@@ -69,7 +69,7 @@ public class Logger
     /// <summary>
     /// Current level
     /// </summary>
-    private LoggerLevel Level { get; set; }
+    public LoggerLevel Level { get; set; }
 
     /// <summary>
     /// Active logger levels
