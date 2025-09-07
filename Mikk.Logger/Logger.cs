@@ -142,6 +142,18 @@ public class Logger
     }
 
     /// <summary>
+    /// Write to the console output with a line terminator
+    /// </summary>
+    /// <param name="text">Text to write</param>
+    /// <param name="color">Fore color of the text</param>
+    public Logger WriteLine( string? text, System.ConsoleColor color = System.ConsoleColor.White )
+    {
+        this.Write( text, color );
+        Console.WriteLine();
+        return this;
+    }
+
+    /// <summary>
     /// Outputs a line terminator
     /// </summary>
     [System.Runtime.CompilerServices.Discardable]
@@ -193,8 +205,6 @@ public class Logger
 
         if( this.IsLevelActive )
         {
-            Console.WriteLine();
-
             Console.Write( '[' );
             Console.ForegroundColor = this.Color;
             Console.Write( this.Name );
