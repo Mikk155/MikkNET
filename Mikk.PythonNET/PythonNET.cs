@@ -35,6 +35,17 @@ public class TypeHint
 
     private readonly Dictionary<string, string> DocStrings = new Dictionary<string, string>();
 
+    private Dictionary<Type, string> MapTypeList = new()
+    {
+        { typeof(string), "str" },
+        { typeof(string[]), "list[str]" },
+        { typeof(List<string>), "list[str]" },
+        { typeof(int), "int" },
+        { typeof(float), "float" },
+        { typeof(void), "None" },
+        { typeof(bool), "bool" }
+    };
+
     public string GetPairs()
     {
         System.Text.StringBuilder s = new System.Text.StringBuilder();
@@ -124,28 +135,29 @@ public class TypeHint
     /// </summary>
     public string MapType( Type type, Type member )
     {
+        // Pythonism, can't make classes return their own type as is not yet "defined" X[
         if( type == member )
-            return "Any"; // Pythonism, can't make classes return their own type as is not yet "defined" X[
-        if( type == typeof( string ) )
-            return "str";
-        if( type == typeof( string[] ) || type == typeof( List<string> ) )
-            return "list[str]";
-        if( type == typeof( int ) )
-            return "int";
-        if( type == typeof( float ) )
-            return "float";
-        if( type == typeof( void ) )
-            return "None";
-        if( type == typeof( bool ) )
-            return "bool";
-        if( type == typeof( System.Numerics.Vector3 ) )
-            return "Vector3";
+            return "Any";
+
+        if( MapTypeList.TryGetValue( type, out string? pyType ) && !string.IsNullOrWhiteSpace( pyType ) )
+            return pyType;
 
         TypeHint.logger.warn
-            .Write( "Undefined python type conversion for CSharp's " )
+            .Write("Undefined python type conversion for CSharp's ")
             .Write( type.Name, ConsoleColor.Green )
+            .NewLine()
+            .Write( "Try using this class's method " )
+            .Write( "AddTypeConversion", ConsoleColor.Yellow )
             .NewLine();
 
         return "Any";
+    }
+
+    /// <summary>
+    /// Adds a C#-Python type conversion
+    /// </summary>
+    public void AddTypeConversion( Type type, string conversion )
+    {
+        MapTypeList[ type ] = conversion;
     }
 }
