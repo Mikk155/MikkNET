@@ -105,8 +105,6 @@ public class TypeHint
             {
                 StringBuilder.AppendLine( $"\t'''{MethodSum}'''" );
             }
-
-            StringBuilder.AppendLine( $"\t\tpass;" );
         }
 
         return StringBuilder.ToString();
