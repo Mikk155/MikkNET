@@ -97,4 +97,34 @@ public class TypeHint
 
         return StringBuilder.ToString();
     }
+
+    /// <summary>
+    /// Maps a C# type to a Python type
+    /// </summary>
+    public string MapType( Type type, Type member )
+    {
+        if( type == member )
+            return "Any"; // Pythonism, can't make classes return their own type as is not yet "defined" X[
+        if( type == typeof( string ) )
+            return "str";
+        if( type == typeof( string[] ) || type == typeof( List<string> ) )
+            return "list[str]";
+        if( type == typeof( int ) )
+            return "int";
+        if( type == typeof( float ) )
+            return "float";
+        if( type == typeof( void ) )
+            return "None";
+        if( type == typeof( bool ) )
+            return "bool";
+        if( type == typeof( System.Numerics.Vector3 ) )
+            return "Vector3";
+
+        TypeHint.logger.warn
+            .Write( "Undefined python type conversion for CSharp's " )
+            .Write( type.Name, ConsoleColor.Green )
+            .NewLine();
+
+        return "Any";
+    }
 }
