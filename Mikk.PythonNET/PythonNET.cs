@@ -110,6 +110,15 @@ public class TypeHint
         return StringBuilder.ToString();
     }
 
+    private static bool IsNullable( System.Reflection.PropertyInfo property )
+    {
+        System.Reflection.NullabilityInfoContext nullabilityInfoContext = new System.Reflection.NullabilityInfoContext();
+
+        System.Reflection.NullabilityInfo info = nullabilityInfoContext.Create( property );
+
+        return ( info.WriteState == System.Reflection.NullabilityState.Nullable || info.ReadState == System.Reflection.NullabilityState.Nullable );
+    }
+
     /// <summary>
     /// Maps a C# type to a Python type
     /// </summary>
