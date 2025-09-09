@@ -95,6 +95,20 @@ public class TypeHint
             StringBuilder.AppendLine($"\t'''{ClassSum}'''");
         }
 
+        StringBuilder.AppendLine();
+
+        foreach( System.Reflection.PropertyInfo prop in type.GetProperties() )
+        {
+            StringBuilder.AppendLine( $"\t{prop.Name}: {this.MapType(prop.PropertyType, type)}" );
+
+            if( this.DocStrings.TryGetValue( $"P:{prop.Name}", out string? MethodSum ) )
+            {
+                StringBuilder.AppendLine( $"\t'''{MethodSum}'''" );
+            }
+
+            StringBuilder.AppendLine( $"\t\tpass;" );
+        }
+
         return StringBuilder.ToString();
     }
 
