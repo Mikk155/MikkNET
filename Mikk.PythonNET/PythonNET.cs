@@ -118,7 +118,49 @@ public class TypeHint
             }
         }
 
+        foreach( System.Reflection.MethodInfo method in type.GetMethods(
+            System.Reflection.BindingFlags.Public |
+            System.Reflection.BindingFlags.GetProperty |
+            System.Reflection.BindingFlags.Instance |
+            System.Reflection.BindingFlags.DeclaredOnly |
+            System.Reflection.BindingFlags.Static
+        ) )
+        {
+            this.WriteMethods( StringBuilder, method, type );
+        }
+
         return StringBuilder.ToString();
+    }
+
+    private void WriteMethods( System.Text.StringBuilder StringBuilder, System.Reflection.MethodInfo method, Type member )
+    {
+        if( method.IsPrivate || method.IsStatic || method.IsSpecialName )
+        {
+            return;
+        }
+
+        System.Reflection.ParameterInfo[] parameters = method.GetParameters();
+
+        StringBuilder.Append( $"\tdef {method.Name}( self" );
+
+        if( parameters.Length > 0 )
+        {
+            StringBuilder.Append( $", " );
+
+            if( method.IsDefined( typeof( System.Runtime.CompilerServices.ExtensionAttribute ), false ) )
+            {
+                parameters = parameters.Skip(1).ToArray();
+            }
+
+            if( parameters.Length > 0 )
+            {
+                StringBuilder.Append( string.Join( ", ", method.GetParameters().Select( p => $"{p.Name}: {MapType(p.ParameterType, member)}" ) ) );
+            }
+        }
+
+        StringBuilder.Append( $" ) -> {MapType(method.ReturnType, member)}:" );
+        StringBuilder.AppendLine();
+        StringBuilder.AppendLine( "\t\tpass;" );
     }
 
     private static bool IsNullable( System.Reflection.PropertyInfo property )
