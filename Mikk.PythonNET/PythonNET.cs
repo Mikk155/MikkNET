@@ -112,7 +112,7 @@ public class TypeHint
         {
             StringBuilder.AppendLine( $"\t{prop.Name}: {this.MapType(prop.PropertyType, type)}" );
 
-            if( this.DocStrings.TryGetValue( $"P:{prop.Name}", out string? MethodSum ) )
+            if( this.DocStrings.TryGetValue( $"P:{type.Name}.{prop.Name}", out string? MethodSum ) )
             {
                 StringBuilder.AppendLine( $"\t'''{MethodSum}'''" );
             }
@@ -160,6 +160,7 @@ public class TypeHint
 
         StringBuilder.Append( $" ) -> {MapType(method.ReturnType, member)}:" );
         StringBuilder.AppendLine();
+
         StringBuilder.AppendLine( "\t\tpass;" );
     }
 
