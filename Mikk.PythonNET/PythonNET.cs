@@ -143,6 +143,8 @@ public class TypeHint
 
         StringBuilder.Append( $"\tdef {method.Name}( self" );
 
+        string DocString = $"M:{member.Name}.{method.Name}";
+
         if( parameters.Length > 0 )
         {
             StringBuilder.Append( $", " );
@@ -155,11 +157,17 @@ public class TypeHint
             if( parameters.Length > 0 )
             {
                 StringBuilder.Append( string.Join( ", ", method.GetParameters().Select( p => $"{p.Name}: {MapType(p.ParameterType, member)}" ) ) );
+                DocString = $"M:{member.Name}.{method.Name}({string.Join( ",", parameters.Select( p => p.ParameterType.FullName ) ).Trim()})";
             }
         }
 
         StringBuilder.Append( $" ) -> {MapType(method.ReturnType, member)}:" );
         StringBuilder.AppendLine();
+
+        if( this.DocStrings.TryGetValue( DocString, out string? MethodSum ) )
+        {
+            StringBuilder.AppendLine( $"\t\t'''{MethodSum.Trim()}'''" );
+        }
 
         StringBuilder.AppendLine( "\t\tpass;" );
     }
