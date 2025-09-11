@@ -209,8 +209,13 @@ public class Logger
     /// Exit the program.
     /// </summary>
     [System.Diagnostics.CodeAnalysis.DoesNotReturn]
-    public void Exit()
+    public void Exit( Action? fnCallback = null )
     {
+        if( fnCallback is not null )
+        {
+            fnCallback.Invoke();
+        }
+
         Environment.Exit(1);
     }
 
