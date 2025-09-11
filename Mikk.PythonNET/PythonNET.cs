@@ -118,15 +118,25 @@ public class TypeHint
             }
         }
 
+        foreach( System.Reflection.MethodInfo method in this.ExtensionMethods( type ) )
+        {
+            if( !method.IsSpecialName )
+            {
+                this.WriteMethods( StringBuilder, method, type );
+            }
+        }
+
         foreach( System.Reflection.MethodInfo method in type.GetMethods(
             System.Reflection.BindingFlags.Public |
             System.Reflection.BindingFlags.GetProperty |
             System.Reflection.BindingFlags.Instance |
-            System.Reflection.BindingFlags.DeclaredOnly |
-            System.Reflection.BindingFlags.Static
+            System.Reflection.BindingFlags.DeclaredOnly
         ) )
         {
-            this.WriteMethods( StringBuilder, method, type );
+            if( !method.IsSpecialName )
+            {
+                this.WriteMethods( StringBuilder, method, type );
+            }
         }
 
         return StringBuilder.ToString();
@@ -134,11 +144,6 @@ public class TypeHint
 
     private void WriteMethods( System.Text.StringBuilder StringBuilder, System.Reflection.MethodInfo method, Type member )
     {
-        if( method.IsPrivate || method.IsStatic || method.IsSpecialName )
-        {
-            return;
-        }
-
         System.Reflection.ParameterInfo[] parameters = method.GetParameters();
 
         StringBuilder.Append( $"\tdef {method.Name}( self" );
@@ -170,6 +175,29 @@ public class TypeHint
         }
 
         StringBuilder.AppendLine( "\t\tpass;" );
+    }
+
+    private IEnumerable<System.Reflection.MethodInfo> ExtensionMethods(Type extype)
+    {
+        return from assembly in AppDomain.CurrentDomain.GetAssemblies()
+
+            from type in assembly.GetTypes()
+
+            where type.IsSealed && type.IsAbstract && !type.IsGenericType && !type.IsNested
+
+            from method in type.GetMethods(
+                System.Reflection.BindingFlags.Static |
+                System.Reflection.BindingFlags.Public |
+                System.Reflection.BindingFlags.NonPublic
+            )
+
+            where method.IsDefined( typeof( System.Runtime.CompilerServices.ExtensionAttribute ), false )
+
+            let parameters = method.GetParameters()
+
+            where parameters.Length > 0 && parameters[0].ParameterType == extype
+
+            select method;
     }
 
     private static bool IsNullable( System.Reflection.PropertyInfo property )
