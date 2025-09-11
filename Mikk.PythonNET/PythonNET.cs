@@ -96,8 +96,6 @@ public class TypeHint
             strbuild.AppendLine($"\t'''{classsummary.Trim()}'''");
         }
 
-        strbuild.AppendLine();
-
         foreach( PropertyInfo prop in type.GetProperties() )
         {
             strbuild.AppendLine( $"\t{prop.Name}: {this.MapType(prop.PropertyType, type)}" );
