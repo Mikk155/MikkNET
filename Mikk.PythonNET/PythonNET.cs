@@ -38,7 +38,7 @@ public class TypeHint
 
     public readonly Dictionary<string, string> m_DocStrings = new Dictionary<string, string>();
 
-    public Dictionary<Type, string> m_MapTypeList = new()
+    public Dictionary<Type, string> MapTypeList = new()
     {
         { typeof(string), "str" },
         { typeof(string[]), "list[str]" },
@@ -236,25 +236,26 @@ public class TypeHint
             return "Any";
         }
 
-        if( this.m_MapTypeList.TryGetValue( type, out string? pyType ) && !string.IsNullOrWhiteSpace( pyType ) )
+        if( this.MapTypeList.TryGetValue( type, out string? pyType ) && !string.IsNullOrWhiteSpace( pyType ) )
             return pyType;
 
         TypeHint.logger.warn
             .Write("Undefined python type conversion for CSharp's ")
             .Write( type.Name, ConsoleColor.Green )
             .NewLine()
-            .Write( "Try using this class's method " )
-            .Write( "AddTypeConversion", ConsoleColor.Yellow )
+            .Write( "Example: " )
+            .Write( "MapTypeList", ConsoleColor.Cyan )
+            .Write( "[ ", ConsoleColor.DarkCyan )
+            .Write( "typeof", ConsoleColor.Blue )
+            .Write( "(", ConsoleColor.Yellow )
+            .Write( type.Name, ConsoleColor.Green )
+            .Write( ")", ConsoleColor.Yellow )
+            .Write( " ] ", ConsoleColor.DarkCyan )
+            .Write( "=", ConsoleColor.Yellow )
+            .Write( $"\"{type.Name.ToLower()}\"", ConsoleColor.DarkYellow )
+            .Write( ";", ConsoleColor.Yellow )
             .NewLine();
 
         return "Any";
-    }
-
-    /// <summary>
-    /// Adds a C#-Python type conversion
-    /// </summary>
-    public void AddTypeConversion( Type type, string conversion )
-    {
-        this.m_MapTypeList[ type ] = conversion;
     }
 }
