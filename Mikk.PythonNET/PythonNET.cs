@@ -49,20 +49,6 @@ public class TypeHint
         { typeof(bool), "bool" }
     };
 
-    // This is for testing purposes and will be removed later
-    public string GetPairs()
-    {
-        StringBuilder s = new StringBuilder();
-
-        foreach( var kv in this.m_DocStrings )
-        {
-            s.AppendLine( $"{kv.Key}" );
-            s.AppendLine( $"    {kv.Value}" );
-        }
-
-        return s.ToString();
-    }
-
     /// <summary>
     /// </summary>
     /// <param name="XMLDocument">Path to a .xml file for C# summary to Python docstring</param>
