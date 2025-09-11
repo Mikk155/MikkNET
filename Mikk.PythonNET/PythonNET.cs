@@ -26,6 +26,9 @@ namespace Mikk.PythonNET;
 
 using Mikk.Logger;
 
+using System.Text;
+using System.Reflection;
+
 /// <summary>
 /// Generate Python classes from C# classes. Purpose: Python type hints for using with PythonNET. no more no less.
 /// </summary>
@@ -33,9 +36,9 @@ public class TypeHint
 {
     public static readonly Logger logger = new Logger( "PythonNET Type Hints", ConsoleColor.Yellow );
 
-    private readonly Dictionary<string, string> DocStrings = new Dictionary<string, string>();
+    private readonly Dictionary<string, string> m_DocStrings = new Dictionary<string, string>();
 
-    private Dictionary<Type, string> MapTypeList = new()
+    private Dictionary<Type, string> m_MapTypeList = new()
     {
         { typeof(string), "str" },
         { typeof(string[]), "list[str]" },
@@ -46,11 +49,12 @@ public class TypeHint
         { typeof(bool), "bool" }
     };
 
+    // This is for testing purposes and will be removed later
     public string GetPairs()
     {
-        System.Text.StringBuilder s = new System.Text.StringBuilder();
+        StringBuilder s = new StringBuilder();
 
-        foreach( var kv in this.DocStrings )
+        foreach( var kv in this.m_DocStrings )
         {
             s.AppendLine( $"{kv.Key}" );
             s.AppendLine( $"    {kv.Value}" );
@@ -68,7 +72,7 @@ public class TypeHint
         {
             if( File.Exists( XMLDocument ) )
             {
-                this.DocStrings = System.Xml.Linq.XDocument.Load( XMLDocument )
+                this.m_DocStrings = System.Xml.Linq.XDocument.Load( XMLDocument )
                     .Descendants( "member" )
                     .Where( m => m.Attribute( "name" ) != null && !string.IsNullOrWhiteSpace( m.Element( "summary" )?.Value ) )
                     .ToDictionary( m => m.Attribute( "name" )!.Value, m => m.Element( "summary" )!.Value.TrimStart() );
@@ -88,71 +92,71 @@ public class TypeHint
         }
     }
 
-    public string Generate( Type type, System.Text.StringBuilder? StringBuilder = null )
+    public string Generate( Type type, StringBuilder? strbuild = null )
     {
-        if( StringBuilder is null )
+        if( strbuild is null )
         {
-            StringBuilder = new System.Text.StringBuilder();
+            strbuild = new StringBuilder();
         }
         else
         {
-            StringBuilder.AppendLine();
+            strbuild.AppendLine();
         }
 
-        StringBuilder.AppendLine( $"class {type.Name}:" );
+        strbuild.AppendLine( $"class {type.Name}:" );
 
-        if( this.DocStrings.TryGetValue( $"T:{type.Name}", out string? ClassSum ) )
+        if( this.m_DocStrings.TryGetValue( $"T:{type.Name}", out string? classsummary ) )
         {
-            StringBuilder.AppendLine($"\t'''{ClassSum}'''");
+            strbuild.AppendLine($"\t'''{classsummary}'''");
         }
 
-        StringBuilder.AppendLine();
+        strbuild.AppendLine();
 
-        foreach( System.Reflection.PropertyInfo prop in type.GetProperties() )
+        foreach( PropertyInfo prop in type.GetProperties() )
         {
-            StringBuilder.AppendLine( $"\t{prop.Name}: {this.MapType(prop.PropertyType, type)}" );
+            strbuild.AppendLine( $"\t{prop.Name}: {this.MapType(prop.PropertyType, type)}" );
 
-            if( this.DocStrings.TryGetValue( $"P:{type.Name}.{prop.Name}", out string? MethodSum ) )
+            if( this.m_DocStrings.TryGetValue( $"P:{type.Name}.{prop.Name}", out string? methodsummary ) )
             {
-                StringBuilder.AppendLine( $"\t'''{MethodSum}'''" );
+                strbuild.AppendLine( $"\t'''{methodsummary}'''" );
             }
         }
 
-        foreach( System.Reflection.MethodInfo method in this.ExtensionMethods( type ) )
+        foreach( MethodInfo method in this.ExtensionMethods( type ) )
         {
             if( !method.IsSpecialName )
             {
-                this.WriteMethods( StringBuilder, method, type );
+                this.WriteMethods( strbuild, method, type );
             }
         }
 
-        foreach( System.Reflection.MethodInfo method in type.GetMethods(
-            System.Reflection.BindingFlags.Public |
-            System.Reflection.BindingFlags.GetProperty |
-            System.Reflection.BindingFlags.Instance |
-            System.Reflection.BindingFlags.DeclaredOnly
+        foreach( MethodInfo method in type.GetMethods(
+            BindingFlags.Public |
+            BindingFlags.GetProperty |
+            BindingFlags.Instance |
+            BindingFlags.DeclaredOnly
         ) )
         {
             if( !method.IsSpecialName )
             {
-                this.WriteMethods( StringBuilder, method, type );
+                this.WriteMethods( strbuild, method, type );
             }
         }
 
-        return StringBuilder.ToString();
+        return strbuild.ToString();
     }
 
-    private void WriteMethods( System.Text.StringBuilder StringBuilder, System.Reflection.MethodInfo method, Type member )
+    private void WriteMethods( StringBuilder strbuild, MethodInfo method, Type member )
     {
-        System.Reflection.ParameterInfo[] parameters = method.GetParameters();
+        ParameterInfo[] parameters = method.GetParameters();
 
-        StringBuilder.Append( $"\tdef {method.Name}( self" );
+        strbuild.Append( $"\tdef {method.Name}( self" );
 
-        string DocString = $"M:{member.Name}.{method.Name}";
+        string doc_string = $"M:{member.Name}.{method.Name}";
 
         if( parameters.Length > 0 )
         {
-            StringBuilder.Append( $", " );
+            strbuild.Append( $", " );
 
             if( method.IsDefined( typeof( System.Runtime.CompilerServices.ExtensionAttribute ), false ) )
             {
@@ -161,23 +165,23 @@ public class TypeHint
 
             if( parameters.Length > 0 )
             {
-                StringBuilder.Append( string.Join( ", ", method.GetParameters().Select( p => $"{p.Name}: {MapType(p.ParameterType, member)}" ) ) );
-                DocString = $"M:{member.Name}.{method.Name}({string.Join( ",", parameters.Select( p => p.ParameterType.FullName ) ).Trim()})";
+                strbuild.Append( string.Join( ", ", method.GetParameters().Select( p => $"{p.Name}: {MapType(p.ParameterType, member)}" ) ) );
+                doc_string = $"M:{member.Name}.{method.Name}({string.Join( ",", parameters.Select( p => p.ParameterType.FullName ) ).Trim()})";
             }
         }
 
-        StringBuilder.Append( $" ) -> {MapType(method.ReturnType, member)}:" );
-        StringBuilder.AppendLine();
+        strbuild.Append( $" ) -> {MapType(method.ReturnType, member)}:" );
+        strbuild.AppendLine();
 
-        if( this.DocStrings.TryGetValue( DocString, out string? MethodSum ) )
+        if( this.m_DocStrings.TryGetValue( doc_string, out string? methodsummary ) )
         {
-            StringBuilder.AppendLine( $"\t\t'''{MethodSum.Trim()}'''" );
+            strbuild.AppendLine( $"\t\t'''{methodsummary.Trim()}'''" );
         }
 
-        StringBuilder.AppendLine( "\t\tpass;" );
+        strbuild.AppendLine( "\t\tpass;" );
     }
 
-    private IEnumerable<System.Reflection.MethodInfo> ExtensionMethods(Type extype)
+    private IEnumerable<MethodInfo> ExtensionMethods(Type extype)
     {
         return from assembly in AppDomain.CurrentDomain.GetAssemblies()
 
@@ -186,9 +190,9 @@ public class TypeHint
             where type.IsSealed && type.IsAbstract && !type.IsGenericType && !type.IsNested
 
             from method in type.GetMethods(
-                System.Reflection.BindingFlags.Static |
-                System.Reflection.BindingFlags.Public |
-                System.Reflection.BindingFlags.NonPublic
+                BindingFlags.Static |
+                BindingFlags.Public |
+                BindingFlags.NonPublic
             )
 
             where method.IsDefined( typeof( System.Runtime.CompilerServices.ExtensionAttribute ), false )
@@ -200,13 +204,13 @@ public class TypeHint
             select method;
     }
 
-    private static bool IsNullable( System.Reflection.PropertyInfo property )
+    private static bool IsNullable( PropertyInfo property )
     {
-        System.Reflection.NullabilityInfoContext nullabilityInfoContext = new System.Reflection.NullabilityInfoContext();
+        NullabilityInfoContext nullability_info = new NullabilityInfoContext();
 
-        System.Reflection.NullabilityInfo info = nullabilityInfoContext.Create( property );
+        NullabilityInfo info = nullability_info.Create( property );
 
-        return ( info.WriteState == System.Reflection.NullabilityState.Nullable || info.ReadState == System.Reflection.NullabilityState.Nullable );
+        return ( info.WriteState == NullabilityState.Nullable || info.ReadState == NullabilityState.Nullable );
     }
 
     /// <summary>
@@ -218,7 +222,7 @@ public class TypeHint
         if( type == member )
             return "Any";
 
-        if( MapTypeList.TryGetValue( type, out string? pyType ) && !string.IsNullOrWhiteSpace( pyType ) )
+        if( this.m_MapTypeList.TryGetValue( type, out string? pyType ) && !string.IsNullOrWhiteSpace( pyType ) )
             return pyType;
 
         TypeHint.logger.warn
@@ -237,6 +241,6 @@ public class TypeHint
     /// </summary>
     public void AddTypeConversion( Type type, string conversion )
     {
-        MapTypeList[ type ] = conversion;
+        this.m_MapTypeList[ type ] = conversion;
     }
 }
