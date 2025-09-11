@@ -206,6 +206,16 @@ public class Logger
     }
 
     /// <summary>
+    /// Call a method on chain. useful if you want to shutdown something before Exit and as well as before Pause
+    /// </summary>
+    [System.Runtime.CompilerServices.Discardable]
+    public Logger Call( Action fnCallback )
+    {
+        fnCallback.Invoke();
+        return this;
+    }
+
+    /// <summary>
     /// Exit the program.
     /// </summary>
     [System.Diagnostics.CodeAnalysis.DoesNotReturn]
