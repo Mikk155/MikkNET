@@ -136,6 +136,14 @@ public class TypeHint
             strbuild.AppendLine($"\t'''{classsummary.Trim()}'''");
         }
 
+        foreach( FieldInfo prop in type.GetFields() )
+        {
+            if( !prop.IsSpecialName && !prop.IsStatic && !prop.IsPrivate )
+            {
+                this.WriteMember( strbuild, 'F', type, prop.FieldType, prop );
+            }
+        }
+
         foreach( PropertyInfo prop in type.GetProperties() )
         {
             if( !prop.IsSpecialName )
