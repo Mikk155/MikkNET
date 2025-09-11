@@ -124,10 +124,7 @@ public class TypeHint
 
         foreach( MethodInfo method in this.ExtensionMethods( type ) )
         {
-            if( !method.IsSpecialName )
-            {
-                this.WriteMethods( strbuild, method, type );
-            }
+            this.WriteMethods( strbuild, method, type );
         }
 
         foreach( MethodInfo method in type.GetMethods(
@@ -137,7 +134,7 @@ public class TypeHint
             BindingFlags.DeclaredOnly
         ) )
         {
-            if( !method.IsSpecialName )
+            if( !method.IsSpecialName && !method.IsStatic && !method.IsPrivate )
             {
                 this.WriteMethods( strbuild, method, type );
             }
