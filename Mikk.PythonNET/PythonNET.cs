@@ -107,7 +107,7 @@ public class TypeHint
 
         if( this.m_DocStrings.TryGetValue( $"T:{type.Name}", out string? classsummary ) )
         {
-            strbuild.AppendLine($"\t'''{classsummary}'''");
+            strbuild.AppendLine($"\t'''{classsummary.Trim()}'''");
         }
 
         strbuild.AppendLine();
@@ -118,7 +118,7 @@ public class TypeHint
 
             if( this.m_DocStrings.TryGetValue( $"P:{type.Name}.{prop.Name}", out string? methodsummary ) )
             {
-                strbuild.AppendLine( $"\t'''{methodsummary}'''" );
+                strbuild.AppendLine( $"\t'''{methodsummary.Trim()}'''" );
             }
         }
 
