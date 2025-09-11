@@ -167,8 +167,6 @@ public class TypeHint
 
         if( parameters.Length > 0 )
         {
-            strbuild.Append( $", " );
-
             doc_string = $"M:{member.Name}.{method.Name}({string.Join( ",", parameters.Select( p => p.ParameterType.FullName ) ).Trim()})";
 
             if( method.IsDefined( typeof( System.Runtime.CompilerServices.ExtensionAttribute ), false ) )
@@ -178,7 +176,28 @@ public class TypeHint
 
             if( parameters.Length > 0 )
             {
-                strbuild.Append( string.Join( ", ", method.GetParameters().Select( p => $"{p.Name}: {MapType(p.ParameterType, member)}" ) ) );
+                strbuild.Append( $", " );
+
+                int counter = 0;
+
+                foreach( ParameterInfo param in parameters )
+                {
+                    counter++;
+
+                    if( this.IsParameterNullable( param ) )
+                    {
+                        strbuild.Append( $"{param.Name}: Optional[{MapType(param.ParameterType, member)}] = None" );
+                    }
+                    else
+                    {
+                        strbuild.Append( $"{param.Name}: {MapType(param.ParameterType, member)}" );
+                    }
+
+                    if( counter < parameters.Length )
+                    {
+                        strbuild.Append( ", " );
+                    }
+                }
             }
         }
 
@@ -216,11 +235,11 @@ public class TypeHint
             select method;
     }
 
-    public static bool IsNullable( PropertyInfo property )
+    public bool IsParameterNullable( ParameterInfo param )
     {
         NullabilityInfoContext nullability_info = new NullabilityInfoContext();
 
-        NullabilityInfo info = nullability_info.Create( property );
+        NullabilityInfo info = nullability_info.Create( param );
 
         return ( info.WriteState == NullabilityState.Nullable || info.ReadState == NullabilityState.Nullable );
     }
