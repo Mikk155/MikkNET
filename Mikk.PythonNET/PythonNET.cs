@@ -219,6 +219,23 @@ public class TypeHint
         if( type == member )
             return "Any";
 
+        // Threat Templates as Any
+        if( type.IsGenericParameter )
+            return "Any";
+
+        if( type.IsGenericType )
+        {
+            type = type.GetGenericTypeDefinition();
+
+            if( type == typeof( List<> ) )
+                return $"list[Any]";
+
+            if( type == typeof( Dictionary<,> ) )
+                return $"dict[Any, Any]";
+
+            return "Any";
+        }
+
         if( this.m_MapTypeList.TryGetValue( type, out string? pyType ) && !string.IsNullOrWhiteSpace( pyType ) )
             return pyType;
 
