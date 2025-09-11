@@ -36,7 +36,7 @@ public class TypeHint
 {
     public static readonly Logger logger = new Logger( "PythonNET Type Hints", ConsoleColor.Yellow );
 
-    public readonly Dictionary<string, string> m_DocStrings = new Dictionary<string, string>();
+    public Dictionary<string, string> m_DocStrings = new Dictionary<string, string>();
 
     public Dictionary<Type, string> MapTypeList = new()
     {
@@ -49,19 +49,39 @@ public class TypeHint
         { typeof(bool), "bool" }
     };
 
-    /// <summary>
-    /// </summary>
+    /// <summary>Load a xml document and parse into m_DocStrings</summary>
     /// <param name="XMLDocument">Path to a .xml file for C# summary to Python docstring</param>
-    public TypeHint( string? XMLDocument )
+    /// <param name="Override">Whatever to clear the summary if not empty</param>
+    /// <returns>True if all right</returns>
+    public bool LoadDocument( string? XMLDocument, bool Override = false )
     {
         if( !string.IsNullOrEmpty( XMLDocument ) )
         {
             if( File.Exists( XMLDocument ) )
             {
-                this.m_DocStrings = System.Xml.Linq.XDocument.Load( XMLDocument )
+                Dictionary<string, string>? newxml = System.Xml.Linq.XDocument.Load( XMLDocument )
                     .Descendants( "member" )
                     .Where( m => m.Attribute( "name" ) != null && !string.IsNullOrWhiteSpace( m.Element( "summary" )?.Value ) )
                     .ToDictionary( m => m.Attribute( "name" )!.Value, m => m.Element( "summary" )!.Value.TrimStart() );
+
+                if( newxml is null )
+                {
+                    return false;
+                }
+
+                if( Override )
+                {
+                    this.m_DocStrings = newxml;
+                }
+                else
+                {
+                    foreach( KeyValuePair<string, string> kv in newxml )
+                    {
+                        this.m_DocStrings[ kv.Key ] = kv.Value;
+                    }
+                }
+
+                return true;
             }
             else
             {
@@ -76,6 +96,16 @@ public class TypeHint
         {
             TypeHint.logger.info.WriteLine( "No XMLDocument specified. Python docstring will not be generated" );
         }
+
+        return false;
+    }
+
+    /// <summary>
+    /// </summary>
+    /// <param name="XMLDocument">Path to a .xml file for C# summary to Python docstring</param>
+    public TypeHint( string? XMLDocument )
+    {
+        this.LoadDocument( XMLDocument );
     }
 
     public string Generate( Type type, StringBuilder? strbuild = null )
