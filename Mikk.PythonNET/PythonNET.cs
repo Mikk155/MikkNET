@@ -36,9 +36,9 @@ public class TypeHint
 {
     public static readonly Logger logger = new Logger( "PythonNET Type Hints", ConsoleColor.Yellow );
 
-    private readonly Dictionary<string, string> m_DocStrings = new Dictionary<string, string>();
+    public readonly Dictionary<string, string> m_DocStrings = new Dictionary<string, string>();
 
-    private Dictionary<Type, string> m_MapTypeList = new()
+    public Dictionary<Type, string> m_MapTypeList = new()
     {
         { typeof(string), "str" },
         { typeof(string[]), "list[str]" },
@@ -143,7 +143,7 @@ public class TypeHint
         return strbuild.ToString();
     }
 
-    private void WriteMethods( StringBuilder strbuild, MethodInfo method, Type member )
+    public void WriteMethods( StringBuilder strbuild, MethodInfo method, Type member )
     {
         ParameterInfo[] parameters = method.GetParameters();
 
@@ -178,7 +178,7 @@ public class TypeHint
         strbuild.AppendLine( "\t\tpass;" );
     }
 
-    private IEnumerable<MethodInfo> ExtensionMethods(Type extype)
+    public IEnumerable<MethodInfo> ExtensionMethods(Type extype)
     {
         return from assembly in AppDomain.CurrentDomain.GetAssemblies()
 
@@ -201,7 +201,7 @@ public class TypeHint
             select method;
     }
 
-    private static bool IsNullable( PropertyInfo property )
+    public static bool IsNullable( PropertyInfo property )
     {
         NullabilityInfoContext nullability_info = new NullabilityInfoContext();
 
