@@ -108,6 +108,16 @@ public class TypeHint
         this.LoadDocument( XMLDocument );
     }
 
+    public void WriteMember( StringBuilder strbuild, char type, Type member, Type prop_type, MemberInfo prop )
+    {
+        strbuild.AppendLine( $"\t{prop.Name}: {this.MapType(prop_type, member)}" );
+
+        if( this.m_DocStrings.TryGetValue( $"{type}:{member.Name}.{prop.Name}", out string? methodsummary ) )
+        {
+            strbuild.AppendLine( $"\t'''{methodsummary.Trim()}'''" );
+        }
+    }
+
     public string Generate( Type type, StringBuilder? strbuild = null )
     {
         if( strbuild is null )
@@ -128,11 +138,9 @@ public class TypeHint
 
         foreach( PropertyInfo prop in type.GetProperties() )
         {
-            strbuild.AppendLine( $"\t{prop.Name}: {this.MapType(prop.PropertyType, type)}" );
-
-            if( this.m_DocStrings.TryGetValue( $"P:{type.Name}.{prop.Name}", out string? methodsummary ) )
+            if( !prop.IsSpecialName )
             {
-                strbuild.AppendLine( $"\t'''{methodsummary.Trim()}'''" );
+                this.WriteMember( strbuild, 'P', type, prop.PropertyType, prop );
             }
         }
 
