@@ -141,6 +141,8 @@ public class TypeHint
         {
             strbuild.Append( $", " );
 
+            doc_string = $"M:{member.Name}.{method.Name}({string.Join( ",", parameters.Select( p => p.ParameterType.FullName ) ).Trim()})";
+
             if( method.IsDefined( typeof( System.Runtime.CompilerServices.ExtensionAttribute ), false ) )
             {
                 parameters = parameters.Skip(1).ToArray();
@@ -149,7 +151,6 @@ public class TypeHint
             if( parameters.Length > 0 )
             {
                 strbuild.Append( string.Join( ", ", method.GetParameters().Select( p => $"{p.Name}: {MapType(p.ParameterType, member)}" ) ) );
-                doc_string = $"M:{member.Name}.{method.Name}({string.Join( ",", parameters.Select( p => p.ParameterType.FullName ) ).Trim()})";
             }
         }
 
