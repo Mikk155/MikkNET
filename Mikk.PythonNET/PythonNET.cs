@@ -269,6 +269,9 @@ public class TypeHint
         if( type == member )
             return "Any";
 
+        if( this.MapTypeList.TryGetValue( type, out string? pyType ) && !string.IsNullOrWhiteSpace( pyType ) )
+            return pyType;
+
         // Threat Templates as Any
         if( type.IsGenericParameter )
             return "Any";
@@ -285,9 +288,6 @@ public class TypeHint
 
             return "Any";
         }
-
-        if( this.MapTypeList.TryGetValue( type, out string? pyType ) && !string.IsNullOrWhiteSpace( pyType ) )
-            return pyType;
 
         TypeHint.logger.warn
             .Write("Undefined python type conversion for CSharp's ")
