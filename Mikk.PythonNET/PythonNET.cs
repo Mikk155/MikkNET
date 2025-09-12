@@ -138,7 +138,7 @@ public class TypeHint
 
         foreach( FieldInfo prop in type.GetFields() )
         {
-            if( !prop.IsSpecialName && !prop.IsStatic && !prop.IsPrivate )
+            if( !prop.IsSpecialName && !prop.IsStatic && !prop.IsPrivate && prop.Name[0] != '_' )
             {
                 this.WriteMember( strbuild, 'F', type, prop.FieldType, prop );
             }
@@ -146,7 +146,7 @@ public class TypeHint
 
         foreach( PropertyInfo prop in type.GetProperties() )
         {
-            if( !prop.IsSpecialName )
+            if( !prop.IsSpecialName && prop.Name[0] != '_' )
             {
                 this.WriteMember( strbuild, 'P', type, prop.PropertyType, prop );
             }
@@ -154,7 +154,10 @@ public class TypeHint
 
         foreach( MethodInfo method in this.ExtensionMethods( type ) )
         {
-            this.WriteMethods( strbuild, method, type );
+            if( method.Name[0] != '_' )
+            {
+                this.WriteMethods( strbuild, method, type );
+            }
         }
 
         foreach( MethodInfo method in type.GetMethods(
@@ -164,7 +167,7 @@ public class TypeHint
             BindingFlags.DeclaredOnly
         ) )
         {
-            if( !method.IsSpecialName && !method.IsStatic && !method.IsPrivate )
+            if( !method.IsSpecialName && !method.IsStatic && !method.IsPrivate && method.Name[0] != '_' )
             {
                 this.WriteMethods( strbuild, method, type );
             }
