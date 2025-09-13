@@ -163,8 +163,11 @@ public class Logger
     /// <param name="color">Fore color of the text</param>
     public Logger WriteLine( string? text, System.ConsoleColor color = System.ConsoleColor.White )
     {
-        this.Write( text, color );
-        Console.WriteLine();
+        if( this.IsLevelActive )
+        {
+            this.Write( text, color );
+            Console.WriteLine();
+        }
         return this;
     }
 
@@ -174,7 +177,10 @@ public class Logger
     [System.Runtime.CompilerServices.Discardable]
     public Logger NewLine()
     {
-        Console.WriteLine();
+        if( this.IsLevelActive )
+        {
+            Console.WriteLine();
+        }
         return this;
     }
 
