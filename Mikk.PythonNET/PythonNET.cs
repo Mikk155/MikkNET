@@ -205,7 +205,7 @@ public class TypeHint
 
                     if( this.IsParameterNullable( param ) )
                     {
-                        strbuild.Append( $"{param.Name}: Optional[{MapType(param.ParameterType, member)}] = None" );
+                        strbuild.Append( $"{param.Name}: Optional[{MapType(param.ParameterType, member)}]" );
                     }
                     else
                     {
