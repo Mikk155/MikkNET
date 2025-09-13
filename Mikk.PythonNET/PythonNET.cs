@@ -270,7 +270,7 @@ public class TypeHint
     {
         // Pythonism, can't make classes return their own type as is not yet "defined" X[
         if( type == member )
-            return "Any";
+            return $"'{member.Name}'";
 
         if( this.MapTypeList.TryGetValue( type, out string? pyType ) && !string.IsNullOrWhiteSpace( pyType ) )
             return pyType;
