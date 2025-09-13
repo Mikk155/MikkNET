@@ -193,6 +193,8 @@ public class TypeHint
                 parameters = parameters.Skip(1).ToArray();
             }
 
+            bool GotDefault = false;
+
             if( parameters.Length > 0 )
             {
                 strbuild.Append( $", " );
@@ -210,6 +212,12 @@ public class TypeHint
                     else
                     {
                         strbuild.Append( $"{param.Name}: {MapType(param.ParameterType, member)}" );
+                    }
+
+                    if( GotDefault || param.HasDefaultValue && param.DefaultValue is not null )
+                    {
+                        GotDefault = true;
+                        strbuild.Append( $" = None" );
                     }
 
                     if( counter < parameters.Length )
