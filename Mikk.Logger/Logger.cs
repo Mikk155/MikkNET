@@ -156,6 +156,10 @@ public class Logger
         return this;
     }
 
+    public Logger Write( string? text, int color ) {
+        return Write( text, (System.ConsoleColor)color );
+    }
+
     /// <summary>
     /// Write to the console output with a line terminator
     /// </summary>
@@ -169,6 +173,10 @@ public class Logger
             Console.WriteLine();
         }
         return this;
+    }
+
+    public Logger WriteLine( string? text, int color ) {
+        return WriteLine( text, (System.ConsoleColor)color );
     }
 
     /// <summary>
