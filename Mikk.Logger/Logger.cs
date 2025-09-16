@@ -126,12 +126,19 @@ public class Logger
         Console.ResetColor();
     }
 
-    public Logger( string LoggerName, System.ConsoleColor LoggerColor = System.ConsoleColor.Gray )
+    public Logger(
+        string LoggerName,
+        System.ConsoleColor LoggerColor = System.ConsoleColor.Gray,
+        bool DateTimeDisplay = true
+    )
     {
         this.Level = LoggerLevel.None;
         this.Name = LoggerName;
         this.Color = LoggerColor;
+        this.DateTimeShow = DateTimeDisplay;
     }
+
+    private readonly bool DateTimeShow;
 
     /// <summary>
     /// Whatever the current Logger's level is active
@@ -251,6 +258,22 @@ public class Logger
         {
             Console.ForegroundColor = SquareBracketColor;
             Console.Write( '[' );
+
+            if( this.DateTimeShow )
+            {
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.Write( DateTime.Now.ToString( "HH" ) );
+                Console.ForegroundColor = SquareBracketColor;
+                Console.Write( ":" );
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.Write( DateTime.Now.ToString( "mm" ) );
+                Console.ForegroundColor = SquareBracketColor;
+                Console.Write( ":" );
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.Write( DateTime.Now.ToString( "ss" ) );
+                Console.ForegroundColor = SquareBracketColor;
+                Console.Write( "] [" );
+            }
 
             Console.ForegroundColor = this.Color;
             Console.Write( this.Name );
