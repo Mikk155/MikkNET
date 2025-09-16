@@ -24,8 +24,6 @@ DEALINGS IN THE SOFTWARE.
 
 namespace Mikk.Logger;
 
-#pragma warning disable IDE1006 // Naming Styles
-
 /// <summary>
 /// Logger levels enum
 /// </summary>
@@ -347,5 +345,3 @@ public class Logger
         };
     }
 }
-
-#pragma warning restore IDE1006 // Naming Styles
