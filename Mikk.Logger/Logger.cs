@@ -248,42 +248,34 @@ public class Logger
         Environment.Exit(1);
     }
 
+    private static void _write_colored( string text, System.ConsoleColor color = SquareBracketColor )
+    {
+    }
+
     private Logger WriteLoggerLine( string type, LoggerLevel level, System.ConsoleColor color )
     {
         this.Level = level;
 
         if( this.IsLevelActive )
         {
-            Console.ForegroundColor = SquareBracketColor;
-            Console.Write( '[' );
+            Logger._write_colored( "[" );
 
             if( this.DateTimeShow )
             {
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.Write( DateTime.Now.ToString( "HH" ) );
-                Console.ForegroundColor = SquareBracketColor;
-                Console.Write( ":" );
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.Write( DateTime.Now.ToString( "mm" ) );
-                Console.ForegroundColor = SquareBracketColor;
-                Console.Write( ":" );
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.Write( DateTime.Now.ToString( "ss" ) );
-                Console.ForegroundColor = SquareBracketColor;
-                Console.Write( "] [" );
+                DateTime now = DateTime.Now;
+
+                Logger._write_colored( now.ToString( "HH" ), ConsoleColor.Yellow );
+                Logger._write_colored( ":" );
+                Logger._write_colored( now.ToString( "mm" ), ConsoleColor.Yellow );
+                Logger._write_colored( ":" );
+                Logger._write_colored( now.ToString( "ss" ), ConsoleColor.Yellow );
+                Logger._write_colored( "] [" );
             }
 
-            Console.ForegroundColor = this.Color;
-            Console.Write( this.Name );
-
-            Console.ForegroundColor = SquareBracketColor;
-            Console.Write( "] [" );
-
-            Console.ForegroundColor = color;
-            Console.Write( type );
-
-            Console.ForegroundColor = SquareBracketColor;
-            Console.Write( "] " );
+            Logger._write_colored( this.Name, this.Color );
+            Logger._write_colored( "] [" );
+            Logger._write_colored( type, color );
+            Logger._write_colored( "] " );
 
             Console.ResetColor();
         }
