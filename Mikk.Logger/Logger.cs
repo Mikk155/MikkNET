@@ -126,7 +126,7 @@ public class Logger
         Console.ResetColor();
     }
 
-    public Logger( string LoggerName, System.ConsoleColor LoggerColor = System.ConsoleColor.Black )
+    public Logger( string LoggerName, System.ConsoleColor LoggerColor = System.ConsoleColor.Gray )
     {
         this.Level = LoggerLevel.None;
         this.Name = LoggerName;
