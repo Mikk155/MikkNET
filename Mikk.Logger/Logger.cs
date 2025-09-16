@@ -248,34 +248,36 @@ public class Logger
         Environment.Exit(1);
     }
 
-    private static void _write_colored( string text, System.ConsoleColor color = SquareBracketColor )
-    {
-    }
-
     private Logger WriteLoggerLine( string type, LoggerLevel level, System.ConsoleColor color )
     {
         this.Level = level;
 
         if( this.IsLevelActive )
         {
-            Logger._write_colored( "[" );
+            Action<string, ConsoleColor?> DRYWrite = ( text, clr ) =>
+            {
+                Console.ForegroundColor = clr ?? SquareBracketColor;
+                Console.Write( text );
+            };
+
+            DRYWrite( "[", null );
 
             if( this.DateTimeShow )
             {
                 DateTime now = DateTime.Now;
 
-                Logger._write_colored( now.ToString( "HH" ), ConsoleColor.Yellow );
-                Logger._write_colored( ":" );
-                Logger._write_colored( now.ToString( "mm" ), ConsoleColor.Yellow );
-                Logger._write_colored( ":" );
-                Logger._write_colored( now.ToString( "ss" ), ConsoleColor.Yellow );
-                Logger._write_colored( "] [" );
+                DRYWrite( now.ToString( "HH" ), ConsoleColor.Yellow );
+                DRYWrite( ":", null );
+                DRYWrite( now.ToString( "mm" ), ConsoleColor.Yellow );
+                DRYWrite( ":", null );
+                DRYWrite( now.ToString( "ss" ), ConsoleColor.Yellow );
+                DRYWrite( "] [", null );
             }
 
-            Logger._write_colored( this.Name, this.Color );
-            Logger._write_colored( "] [" );
-            Logger._write_colored( type, color );
-            Logger._write_colored( "] " );
+            DRYWrite( this.Name, this.Color );
+            DRYWrite( "] [", null );
+            DRYWrite( type, color );
+            DRYWrite( "] ", null );
 
             Console.ResetColor();
         }
