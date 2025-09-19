@@ -109,6 +109,11 @@ public class Cache
         return null;
     }
 
+    public T? Get<T>( string key )
+    {
+        return this.Get<T>( key, null );
+    }
+
     /// <summary>
     /// Gets a value from the cache
     /// </summary>
@@ -118,7 +123,7 @@ public class Cache
     /// <returns>The stored value if Any. default_value if none stored and store it. or default null if no default_value provided.</returns>
     /// <exception cref="FieldAccessException">Key name starts with "_"</exception>
     /// <exception cref="InvalidDataException">The cast type is not the same as the stored value</exception>
-    public T? Get<T>( string key, object? default_value = null )
+    public T Get<T>( string key, object? default_value )
     {
         Type type;
 
@@ -132,12 +137,8 @@ public class Cache
             this.Store();
             return (T)default_value;
         }
-        else
-        {
-            return default;
-        }
 
-        throw new InvalidDataException( $"Key '{key}' is a type of {value?.GetType()} but {typeof(T)} was expected." );
+        throw new InvalidDataException( $"Key '{key}' has no value and 'default_value' was null" );
     }
 
     /// <summary>
