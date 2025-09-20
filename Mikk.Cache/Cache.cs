@@ -114,6 +114,8 @@ public class Cache : IEnumerable<KeyValuePair<string, JToken?>>
 
         this.data[ key ] = JToken.FromObject( default_value ?? throw new NullReferenceException() );
 
+        Cache.Write( this.FileName, this.data );
+
         return (T)default_value;
     }
 
