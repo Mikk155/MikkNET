@@ -74,12 +74,14 @@ public class Cache : IEnumerable<KeyValuePair<string, JToken?>>
     {
         foreach( var pairs in this.data )
         {
-            if( pairs.Key.Length > 0 && pairs.Key[0] != Cache.InternalPrefix )
+            if( !this.IsInternal( pairs.Key ) )
                 yield return pairs;
         }
     }
 
     System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => this.GetEnumerator();
+
+    public bool IsInternal( string key ) => key[0] != Cache.InternalPrefix;
 
     /// <summary>
     /// Find the cache owner of this object and try to write the cache instance
