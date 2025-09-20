@@ -119,6 +119,23 @@ public class Cache : IEnumerable<KeyValuePair<string, JToken?>>
     }
 
     /// <summary>
+    /// Return whatever the key-value pair exists.
+    /// </summary>
+    public bool Exists( string key ) => this.data.ContainsKey( key );
+
+    /// <summary>
+    /// Return whatever the key-value pair exists.
+    /// </summary>
+    public bool Exists( string key, out JToken value )
+    {
+        if( this.data.TryGetValue( key, out value! ) && value is not null )
+        {
+            return true;
+        }
+        return false;
+    }
+
+    /// <summary>
     /// Gets and cast an object from the JObject. if it doesn't exists the default_value will be writed and returned
     /// </summary>
     /// <exception cref="AccessViolationException"></exception>
