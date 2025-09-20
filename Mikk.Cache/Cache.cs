@@ -30,7 +30,7 @@ using Newtonsoft.Json.Linq;
 /// <summary>
 /// Simple cache context
 /// </summary>
-public class Cache
+public class Cache : IEnumerable<KeyValuePair<string, JToken?>>
 {
     /// <summary>
     /// Prefix key names for intenal operations
@@ -69,6 +69,17 @@ public class Cache
     {
         Cache.Write( this.FileName, this.data );
     }
+
+    public IEnumerator<KeyValuePair<string, JToken?>> GetEnumerator()
+    {
+        foreach( var pairs in this.data )
+        {
+            if( pairs.Key.Length > 0 && pairs.Key[0] != Cache.InternalPrefix )
+                yield return pairs;
+        }
+    }
+
+    System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => this.GetEnumerator();
 
     /// <summary>
     /// Find the cache owner of this object and try to write the cache instance
