@@ -84,6 +84,40 @@ public class Cache : IEnumerable<KeyValuePair<string, JToken?>>
     public bool IsInternal( string key ) => key[0] == Cache.InternalPrefix;
 
     /// <summary>
+    /// Gets and cast an object from the JObject.
+    /// </summary>
+    /// <exception cref="AccessViolationException"></exception>
+    public T? Get<T>( string key )
+    {
+        if( this.IsInternal( key ) )
+            throw new AccessViolationException( $"Key name \"{key}\" is reserved for internal operations" );
+
+        if( this.data.TryGetValue( key, out JToken? token ) && token is not null )
+        {
+            if( token is T casted )
+                return casted;
+        }
+
+        return default;
+    }
+
+    /// <summary>
+    /// Gets and cast an object from the JObject. if it doesn't exists the default_value will be writed and returned
+    /// </summary>
+    /// <exception cref="AccessViolationException"></exception>
+    public T Get<T>( string key, T default_value )
+    {
+        T? type = this.Get<T>( key );
+
+        if( type is not null )
+            return type;
+
+        this.data[ key ] = JToken.FromObject( default_value ?? throw new NullReferenceException() );
+
+        return (T)default_value;
+    }
+
+    /// <summary>
     /// Find the cache owner of this object and try to write the cache instance
     /// </summary>
     public static void Write( JObject obj )
