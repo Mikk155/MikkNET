@@ -26,6 +26,7 @@ namespace Mikk.Cache;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Schema;
 
 /// <summary>
 /// Simple cache context
@@ -94,8 +95,7 @@ public class Cache : IEnumerable<KeyValuePair<string, JToken?>>
 
         if( this.data.TryGetValue( key, out JToken? token ) && token is not null )
         {
-            if( token is T casted )
-                return casted;
+            return token.Value<T>();
         }
 
         return default;
