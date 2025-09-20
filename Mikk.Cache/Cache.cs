@@ -52,6 +52,9 @@ public class Cache
         this.FileName = filename;
         this.data = Cache.Read( this.FileName );
         this.data[ $"{InternalPrefix}Cache.FileName" ] = this.FileName;
+
+        AppDomain.CurrentDomain.ProcessExit += ( e, a ) => { this.Write(); };
+        Console.CancelKeyPress += ( e, a ) => { this.Write(); };
     }
 
     /// <summary>
