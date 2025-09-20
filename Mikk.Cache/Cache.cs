@@ -101,6 +101,23 @@ public class Cache : IEnumerable<KeyValuePair<string, JToken?>>
         return default;
     }
 
+    public JToken? this[ string key ]
+    {
+        get
+        {
+            if( this.data.ContainsKey( key ) )
+            {
+                return this.data[ key ];
+            }
+            return null;
+        }
+        set
+        {
+            this.data[ key ] = value;
+            Cache.Write( this.FileName, this.data );
+        }
+    }
+
     /// <summary>
     /// Gets and cast an object from the JObject. if it doesn't exists the default_value will be writed and returned
     /// </summary>
