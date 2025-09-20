@@ -22,7 +22,7 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-namespace Mikk.CacheManager;
+namespace Mikk.Cache;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
