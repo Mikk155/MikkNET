@@ -154,6 +154,72 @@ public class Cache : IEnumerable<KeyValuePair<string, JToken?>>
     }
 
     /// <summary>
+    /// Gets a value for the given key. if it doesn't exists we'll ask the user in a loop until validator doesn't throw any exception
+    /// </summary>
+    public void UserConfig( string key, Func<string, bool> validator, string title, string? default_value = null )
+    {
+        // Try first to use the defined if any
+        string? value = default_value is null ? this.Get<string>( key ) : this.Get<string>( key, default_value );
+
+        if( value is null )
+        {
+            Console.ForegroundColor = ConsoleColor.DarkGreen;
+            Console.WriteLine( title );
+            Console.ResetColor();
+
+            Console.WriteLine( "Please input a valid value" );
+
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.Write( key );
+            Console.ResetColor();
+
+            Console.Write( ": " );
+        }
+
+        while( true )
+        {
+            try
+            {
+                // If validator didn't throw an exception then is safe to assume everything has been setup propertly.
+                if( !string.IsNullOrWhiteSpace( value ) && validator( value ) )
+                {
+                    this.data[ key ] = value;
+                    Cache.Write( this.FileName, this.data );
+                    break;
+                }
+            }
+            catch ( Exception exception )
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine( "Invalid value" );
+                Console.WriteLine( "Error: " );
+
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine( exception.Message );
+                Console.ResetColor();
+
+                Console.WriteLine( "Please input a valid value" );
+
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.Write( key );
+                Console.ResetColor();
+
+                Console.Write( ": " );
+            }
+
+            Console.BackgroundColor = ConsoleColor.DarkGray;
+            Console.ForegroundColor = ConsoleColor.White;
+
+            value = Console.ReadLine();
+
+            Console.ResetColor();
+
+            // Write a line since the user is in the last output
+            Console.WriteLine();
+        }
+    }
+
+    /// <summary>
     /// Find the cache owner of this object and try to write the cache instance
     /// </summary>
     public static void Write( JObject obj )
